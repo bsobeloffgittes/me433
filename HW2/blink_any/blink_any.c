@@ -38,8 +38,8 @@ int pico_led_init(void) {
     if (LED_TYPE == 0) {
         // A device like Pico that uses a GPIO for the LED so we can
         // use normal GPIO functionality to turn the led on and off
-        gpio_init(LED_PIN);
-        gpio_set_dir(LED_PIN, GPIO_OUT);
+        gpio_init(19);
+        gpio_set_dir(19, GPIO_OUT);
         return PICO_OK;
 #ifdef CYW43_WL_GPIO_LED_PIN
     } else if (LED_TYPE == 1) {
@@ -55,7 +55,7 @@ int pico_led_init(void) {
 void pico_set_led(bool led_on) {
     if (LED_TYPE == 0) {
         // Just set the GPIO on or off
-        gpio_put(LED_PIN, led_on);
+        gpio_put(19, led_on);
 #ifdef CYW43_WL_GPIO_LED_PIN
     } else if (LED_TYPE == 1) {
         // Ask the wifi "driver" to set the GPIO on or off

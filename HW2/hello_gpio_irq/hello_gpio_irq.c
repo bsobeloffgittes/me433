@@ -8,7 +8,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-#define GPIO_WATCH_PIN 2
+#define GPIO_WATCH_PIN 16
 
 static char event_str[128];
 
@@ -26,6 +26,7 @@ int main() {
 
     printf("Hello GPIO IRQ\n");
     gpio_init(GPIO_WATCH_PIN);
+    gpio_pull_up(GPIO_WATCH_PIN);
     gpio_set_irq_enabled_with_callback(GPIO_WATCH_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
     // Wait forever
