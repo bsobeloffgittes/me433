@@ -8,13 +8,16 @@
 
 static char event_str[128];
 
+uint16_t num_presses;
+
 void gpio_event_string(char *buf, uint32_t events);
 
 void gpio_callback(uint gpio, uint32_t events) {
     // Put the GPIO event(s) that just happened into event_str
     // so we can print it
-    gpio_event_string(event_str, events);
-    printf("GPIO %d %s\n", gpio, event_str);
+    gpio_put(LED_PIN, (++num_presses)%2);
+    printf("Number of presses: %d\r\n", num_presses);
+
 }
 
 
@@ -27,11 +30,12 @@ int pico_led_init(void) {
     return PICO_OK;
 }
 
-// Turn the led on or off
-void pico_set_led(bool led_on) {
-    // Just set the GPIO on or off
-    gpio_put(LED_PIN, led_on);
-}
+// // Turn the led on or off
+// void pico_set_led(bool led_on) {
+//     // Just set the GPIO on or off
+//     gpio_put(LED_PIN, led_on);
+    
+// }
 
 int main()
 {
@@ -46,12 +50,10 @@ int main()
     int rc = pico_led_init();
     hard_assert(rc == PICO_OK);
 
-    while (true) {
-        pico_set_led(true);
-        sleep_ms(1000);
-        pico_set_led(false);
-        sleep_ms(1000);
-    }
+    // initialize variables to keep track of button presses
+    num_presses = 0;
+
+    while (1);
 }
 
 
@@ -59,31 +61,31 @@ int main()
 
 
 
-// Extra stuff for interrupt
-static const char *gpio_irq_str[] = {
-    "LEVEL_LOW",  // 0x1
-    "LEVEL_HIGH", // 0x2
-    "EDGE_FALL",  // 0x4
-    "EDGE_RISE"   // 0x8
-};
+// // Extra stuff for interrupt
+// static const char *gpio_irq_str[] = {
+//     "LEVEL_LOW",  // 0x1
+//     "LEVEL_HIGH", // 0x2
+//     "EDGE_FALL",  // 0x4
+//     "EDGE_RISE"   // 0x8
+// };
 
-void gpio_event_string(char *buf, uint32_t events) {
-for (uint i = 0; i < 4; i++) {
-    uint mask = (1 << i);
-    if (events & mask) {
-        // Copy this event string into the user string
-        const char *event_str = gpio_irq_str[i];
-        while (*event_str != '\0') {
-            *buf++ = *event_str++;
-        }
-        events &= ~mask;
+// void gpio_event_string(char *buf, uint32_t events) {
+// for (uint i = 0; i < 4; i++) {
+//     uint mask = (1 << i);
+//     if (events & mask) {
+//         // Copy this event string into the user string
+//         const char *event_str = gpio_irq_str[i];
+//         while (*event_str != '\0') {
+//             *buf++ = *event_str++;
+//         }
+//         events &= ~mask;
 
-        // If more events add ", "
-        if (events) {
-            *buf++ = ',';
-            *buf++ = ' ';
-        }
-    }
-}
-*buf++ = '\0';
-}
+//         // If more events add ", "
+//         if (events) {
+//             *buf++ = ',';
+//             *buf++ = ' ';
+//         }
+//     }
+// }
+// *buf++ = '\0';
+// }
