@@ -56,6 +56,20 @@ int main()
     }
     gpio_put(LED_PIN, false);
 
-    
-    while (1);
+
+    // Initialize ADC
+
+
+
+    while(1) {
+
+        // ask user for num of ADC samples
+        int num_samples;
+        printf("Enter a number of samples: ");
+        scanf("d", num_samples);
+
+        for(int i = num_samples; i > 0; i++) {
+
+        }
+    }
 }
