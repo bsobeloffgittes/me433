@@ -30,16 +30,21 @@ int main()
     button_pressed = false;
 
     stdio_init_all();
-    while(!stdio_usb_connected) {
-        sleep_ms(100);
-    }
-    printf("Start\n");
-
-
 
     // Initialize LED pin
     int rc = pico_led_init();
     hard_assert(rc == PICO_OK);
+
+    // turn off LED
+    gpio_put(LED_PIN, false);
+
+
+
+    while(!stdio_usb_connected()) {
+        sleep_ms(100);
+    }
+
+
 
     // Init interrupt on button
     gpio_init(BUTTON_PIN);
@@ -67,13 +72,14 @@ int main()
     while(1) {
 
         // ask user for num of ADC samples
-        int num_samples;
-        printf("Enter a number of samples: ");
-        scanf("d", num_samples);
+        int16_t num_samples;
+        printf("Enter a number of samples: \n");
+        scanf("%d", &num_samples);
 
-        for(int i = num_samples; i > 0; i++) {
+        for(int16_t i = num_samples; i > 0; i--) {
             uint16_t adc_val = adc_read();
-            printf("%.2f", (3.3/4095.0)*((float)adc_val));
+            printf("%.2f V\n", (3.3/4095.0)*((float)adc_val));
+            sleep_ms(10);
         }
     }
 }
