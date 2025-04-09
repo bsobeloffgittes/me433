@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
+#include "hardware/adc.h"
 
 #define LED_PIN 19
 #define BUTTON_PIN 16
@@ -58,7 +59,9 @@ int main()
 
 
     // Initialize ADC
-
+    adc_init();
+    adc_gpio_init(26); // ADC0 pin is used as ADC
+    adc_select_input(0); // select to read from ADC0
 
 
     while(1) {
@@ -69,7 +72,8 @@ int main()
         scanf("d", num_samples);
 
         for(int i = num_samples; i > 0; i++) {
-
+            uint16_t adc_val = adc_read();
+            printf("%.2f", (3.3/4095.0)*((float)adc_val));
         }
     }
 }

@@ -47,6 +47,7 @@ pico_enable_stdio_usb(HW3 1)
 # Add the standard library to the build
 target_link_libraries(HW3
         pico_stdlib
+        hardware_adc
         hardware_gpio)
 
 # Add the standard include files to the build
