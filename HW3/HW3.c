@@ -7,13 +7,12 @@
 
 
 
-uint16_t num_presses;
+bool button_pressed;
+
 
 void gpio_callback(uint gpio, uint32_t events) {
     // Do what needs to happen when button pressed
-    gpio_put(LED_PIN, (++num_presses)%2);
-    printf("Number of presses: %d\r\n", num_presses);
-
+    button_pressed = true;
 }
 
 // Perform initialisation
@@ -27,23 +26,36 @@ int pico_led_init(void) {
 
 int main()
 {
+    button_pressed = false;
+
     stdio_init_all();
     while(!stdio_usb_connected) {
         sleep_ms(100);
     }
     printf("Start\n");
 
-    // Init interrupt on button
-    gpio_init(BUTTON_PIN);
-    gpio_pull_up(BUTTON_PIN);
-    gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
+
 
     // Initialize LED pin
     int rc = pico_led_init();
     hard_assert(rc == PICO_OK);
 
-    // initialize variables to keep track of button presses
-    num_presses = 0;
+    // Init interrupt on button
+    gpio_init(BUTTON_PIN);
+    gpio_pull_up(BUTTON_PIN);
+    gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
+
+
+    // turn on LED
+    gpio_put(LED_PIN, true);
+
+    // turn LED off when button pressed
+    while(!button_pressed) {
+        sleep_ms(10);
+    }
+    gpio_put(LED_PIN, false);
+
+    
     while (1);
 }
