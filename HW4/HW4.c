@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+#include <math.h>
 
 // SPI Defines
 // We are going to use SPI 0, and allocate it to the following GPIO pins
@@ -11,10 +12,20 @@
 #define PIN_SCK  18
 #define PIN_MOSI 19
 
+#define DATA_A_MASK 0b00110000
+#define DATA_B_MASK 0b10110000
+
 
 static inline void cs_select(uint cs_pin);
 static inline void cs_deselect(uint cs_pin);
 
+uint16_t get_sin_val();
+uint16_t get_tri_val();
+
+void pack_buffer(uint8_t* buffer, uint8_t mask, uint16_t num);
+
+uint16_t out_a;
+uint16_t out_b;
 
 int main()
 {
@@ -35,8 +46,14 @@ int main()
     while (true) {
         // printf("Hello, world!\n");
         // sleep_ms(1000);
-        uint8_t data_a[] = {0b00110100, 0};
-        uint8_t data_b[] = {0b10111000, 0};
+        // uint8_t data_a[] = {0b00110100, 0};
+        // uint8_t data_b[] = {0b10111000, 0};
+
+        uint8_t data_a[2];
+        uint8_t data_b[2];
+
+        pack_buffer(data_a, DATA_A_MASK, 750);
+        pack_buffer(data_b, DATA_B_MASK, 500);
 
         // Write over spi
         cs_select(PIN_CS);
@@ -45,6 +62,9 @@ int main()
         cs_select(PIN_CS);
         spi_write_blocking(SPI_PORT, data_b, 2);
         cs_deselect(PIN_CS);
+
+        // Loop at 1 kHz
+        sleep_ms(1000);
     }
 }
 
@@ -60,4 +80,22 @@ static inline void cs_deselect(uint cs_pin) {
     asm volatile("nop \n nop \n nop"); // FIXME
     gpio_put(cs_pin, 1);
     asm volatile("nop \n nop \n nop"); // FIXME
+}
+
+
+uint16_t get_sin_val() {
+    static uint16_t t = 0;
+
+    uint16_t output = (uint16_t) ((1023/2)*sin((((float) t) * 2 * M_PI)/1000) + 1023/2);
+    
+    t = (t+1)%1000;
+
+    return output;
+}
+
+
+void pack_buffer(uint8_t* buffer, uint8_t mask, uint16_t num) {
+    int new_num = num & 0x3FF;
+    buffer[0] = mask | new_num >> 6;
+    buffer[1] = (new_num && 0x3F) << 2;
 }
