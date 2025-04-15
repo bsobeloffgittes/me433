@@ -52,11 +52,11 @@ int main()
         uint8_t data_a[2];
         uint8_t data_b[2];
 
-        uint16_t sin_val = get_sin_val();
-        printf("%d\n", sin_val);
+        // uint16_t sin_val = get_sin_val();
+        // printf("%d\n", sin_val);
 
-        pack_buffer(data_a, DATA_A_MASK, sin_val);
-        pack_buffer(data_b, DATA_B_MASK, 500);
+        pack_buffer(data_a, DATA_A_MASK, get_sin_val());
+        pack_buffer(data_b, DATA_B_MASK, get_tri_val());
 
 
 
@@ -98,7 +98,24 @@ uint16_t get_sin_val() {
     return output;
 }
 
-uint16_t get_tri_val();
+uint16_t get_tri_val() {
+    static uint16_t t = 0;
+
+    uint16_t output_val = 0;
+
+    if(t < 500) {
+        output_val = (t * 1023) / 500;
+    }
+    else {
+        output_val = ((1000 - t) * 1023) / 500;
+    }
+
+    printf("%d     %d\n", output_val, t);
+
+    t = (t+1)%1000;
+
+    return output_val;
+}
 
 
 
