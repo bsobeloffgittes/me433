@@ -52,8 +52,13 @@ int main()
         uint8_t data_a[2];
         uint8_t data_b[2];
 
-        pack_buffer(data_a, DATA_A_MASK, 750);
+        uint16_t sin_val = get_sin_val();
+        printf("%d\n", sin_val);
+
+        pack_buffer(data_a, DATA_A_MASK, sin_val);
         pack_buffer(data_b, DATA_B_MASK, 500);
+
+
 
         // Write over spi
         cs_select(PIN_CS);
@@ -64,7 +69,7 @@ int main()
         cs_deselect(PIN_CS);
 
         // Loop at 1 kHz
-        sleep_ms(1000);
+        sleep_ms(1);
     }
 }
 
@@ -86,12 +91,16 @@ static inline void cs_deselect(uint cs_pin) {
 uint16_t get_sin_val() {
     static uint16_t t = 0;
 
-    uint16_t output = (uint16_t) ((1023/2)*sin((((float) t) * 2 * M_PI)/1000) + 1023/2);
+    uint16_t output = (uint16_t) ((1023/2)*sin(2 * (((float) t) * 2*M_PI)/1000) + 1023/2);
     
     t = (t+1)%1000;
 
     return output;
 }
+
+uint16_t get_tri_val();
+
+
 
 
 void pack_buffer(uint8_t* buffer, uint8_t mask, uint16_t num) {
