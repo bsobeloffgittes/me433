@@ -12,6 +12,9 @@
 #define PIN_MOSI 19
 
 
+static inline void cs_select(uint cs_pin);
+static inline void cs_deselect(uint cs_pin);
+
 
 int main()
 {
@@ -32,5 +35,29 @@ int main()
     while (true) {
         // printf("Hello, world!\n");
         // sleep_ms(1000);
+        uint8_t data_a[] = {0b00110100, 0};
+        uint8_t data_b[] = {0b10111000, 0};
+
+        // Write over spi
+        cs_select(PIN_CS);
+        spi_write_blocking(SPI_PORT, data_a, 2);
+        cs_deselect(PIN_CS);
+        cs_select(PIN_CS);
+        spi_write_blocking(SPI_PORT, data_b, 2);
+        cs_deselect(PIN_CS);
     }
+}
+
+
+
+static inline void cs_select(uint cs_pin) {
+    asm volatile("nop \n nop \n nop"); // FIXME
+    gpio_put(cs_pin, 0);
+    asm volatile("nop \n nop \n nop"); // FIXME
+}
+
+static inline void cs_deselect(uint cs_pin) {
+    asm volatile("nop \n nop \n nop"); // FIXME
+    gpio_put(cs_pin, 1);
+    asm volatile("nop \n nop \n nop"); // FIXME
 }
