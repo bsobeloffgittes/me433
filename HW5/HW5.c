@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 
-
+void count_cycles(void);
 
 int main() {
 
@@ -12,6 +12,18 @@ int main() {
         sleep_ms(100);
     }
 
+    // Perform the clock cycle counting part of the assignment
+    count_cycles();
+
+    while (true) {
+        sleep_ms(1000);
+    }
+}
+
+
+
+
+void count_cycles() {
     volatile float f1, f2;
     printf("Enter two floats to use:");
     scanf("%f %f", &f1, &f2);
@@ -48,9 +60,4 @@ int main() {
     printf("\nResults: \n%f+%f=%f \n%f-%f=%f \n%f*%f=%f \n%f/%f=%f\n", f1,f2,f_add, f1,f2,f_sub, f1,f2,f_mult, f1,f2,f_div);
 
     printf("\nClock cycles:\nAddition: %llu\nSubtraction: %llu\nMultiplication: %llu\nDivision: %llu", t_add, t_sub, t_mult, t_div);
-
-    while (true) {
-        //printf("Hello, world!\n");
-        sleep_ms(1000);
-    }
 }
