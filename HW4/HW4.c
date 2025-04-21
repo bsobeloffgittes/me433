@@ -44,16 +44,9 @@ int main()
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
     while (true) {
-        // printf("Hello, world!\n");
-        // sleep_ms(1000);
-        // uint8_t data_a[] = {0b00110100, 0};
-        // uint8_t data_b[] = {0b10111000, 0};
 
         uint8_t data_a[2];
         uint8_t data_b[2];
-
-        // uint16_t sin_val = get_sin_val();
-        // printf("%d\n", sin_val);
 
         pack_buffer(data_a, DATA_A_MASK, get_sin_val());
         pack_buffer(data_b, DATA_B_MASK, get_tri_val());
