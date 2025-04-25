@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/spi.h"
-#include <math.h>
+
 #include "timing.h"
+#include "ram.h"
+#include "dac.h"
+#include "spi.h"
+
 
 
 // SPI Defines
@@ -15,14 +18,10 @@
 #define PIN_SCK     18
 #define PIN_MOSI    19
 
-#define DATA_A_MASK 0b00110000
-#define DATA_B_MASK 0b10110000
 
 
-static inline void cs_select(uint cs_pin);
-static inline void cs_deselect(uint cs_pin);
 
-void pack_buffer(uint8_t* buffer, uint8_t mask, uint16_t num);
+
 
 int main() {
 
@@ -48,27 +47,4 @@ int main() {
     while (true) {
         sleep_ms(1000);
     }
-}
-
-
-
-
-
-static inline void cs_select(uint cs_pin) {
-    asm volatile("nop \n nop \n nop"); // FIXME
-    gpio_put(cs_pin, 0);
-    asm volatile("nop \n nop \n nop"); // FIXME
-}
-
-static inline void cs_deselect(uint cs_pin) {
-    asm volatile("nop \n nop \n nop"); // FIXME
-    gpio_put(cs_pin, 1);
-    asm volatile("nop \n nop \n nop"); // FIXME
-}
-
-
-void pack_buffer(uint8_t* buffer, uint8_t mask, uint16_t num) {
-    int new_num = num & 0x3FF;
-    buffer[0] = mask | new_num >> 6;
-    buffer[1] = (new_num && 0x3F) << 2;
 }
