@@ -32,7 +32,7 @@ void pack_sin_wave() {
     
     
     for(uint16_t i = 0; i < 1000; i++) {
-        float curr_val = sin(((float)i) * 2*M_PI /1000.0);
+        float curr_val = 1.65*sin(((float)i) * 2*M_PI /1000.0) + 1.65;
         pack_float_buffer(curr_val, curr_float_buf);
 
         begin_ram_write(i * 4);

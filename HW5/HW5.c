@@ -29,12 +29,8 @@ int main() {
 
     stdio_init_all();
 
-    while(!stdio_usb_connected()) {
-        sleep_ms(100);
-    }
-
     // SPI initialisation. This example will use SPI at 1MHz.
-    spi_init(SPI_PORT, 10*1000);
+    spi_init(SPI_PORT, 1000*1000);
     gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
     gpio_set_function(PIN_DAC_CS,   GPIO_FUNC_SIO);
     gpio_set_function(PIN_MEM_CS,   GPIO_FUNC_SIO);
@@ -61,12 +57,6 @@ int main() {
     while (true) {
         sleep_ms(1);
 
-        // uint8_t destination;
-
-        // read_ram_bytes(i, 1, &destination);
-
-        // printf("%d\r\n", destination);
-
         ram_to_dac(4*i);
 
         i = (i+1)%1000;
@@ -79,21 +69,9 @@ void ram_to_dac(uint16_t addr) {
 
     read_ram_bytes(addr, 4, read_bytes);
 
-    union FloatInt float_bytes;
-
-    // uint8_t new_bytes[4];
-    // new_bytes[0] = read_bytes[3];
-    // new_bytes[1] = read_bytes[2];
-    // new_bytes[2] = read_bytes[1];
-    // new_bytes[3] = read_bytes[0];
-
     float read_val;
 
-    // printf("%d %d %d %d       ", read_bytes[0], read_bytes[1], read_bytes[2], read_bytes[3]);
-    // float_bytes.i = read_bytes[0] + ((uint32_t) read_bytes[1])<<8 + ((uint32_t) read_bytes[2])<<16 + ((uint32_t) read_bytes[3])<<24;
     memcpy(&read_val, read_bytes, sizeof(float));
-    // printf("Read value: %f\r\n", float_bytes.f);
-    // printf("val: %f    at addr %d\r\n", read_val, addr);
 
     set_dac_volt_a(read_val);
 }
