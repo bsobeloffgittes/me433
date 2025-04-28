@@ -29,17 +29,20 @@ void pack_sin_wave() {
     uint8_t curr_float_buf[4];
 
     // Send stuff to start writing
-    begin_ram_write(0);
+    
     
     for(int i = 0; i < 1000; i++) {
-        pack_float_buffer(sin(i * 2*M_PI /1000.0), curr_float_buf);
+        float curr_val = sin(i * 2*M_PI /1000.0);
+        pack_float_buffer(curr_val, curr_float_buf);
 
+        begin_ram_write(i * 4);
         spi_write_blocking(SPI_PORT, curr_float_buf, 4);
+        cs_deselect(PIN_MEM_CS);
+
+        printf("Adding %0.2f to %d\r\n", curr_val, i);
         
     }
 
-    // end communication
-    cs_deselect(PIN_MEM_CS);
 }
 
 void begin_ram_write(uint16_t addr) {

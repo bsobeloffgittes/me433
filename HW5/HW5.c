@@ -19,13 +19,17 @@
 #define PIN_MOSI    19
 
 
-
+void ram_to_dac(uint16_t addr);
 
 
 
 int main() {
 
     stdio_init_all();
+
+    while(!stdio_usb_connected()) {
+        sleep_ms(100);
+    }
 
     // SPI initialisation. This example will use SPI at 1MHz.
     spi_init(SPI_PORT, 1000*1000);
@@ -50,13 +54,19 @@ int main() {
 
     pack_sin_wave();
 
+    uint16_t i = 0;
+
     while (true) {
         sleep_ms(100);
 
         uint8_t destination;
 
-        read_ram_bytes(100, 1, &destination);
+        read_ram_bytes(i, 1, &destination);
 
         printf("%d\r\n", destination);
+
+        i = (i+1)%1000;
     }
 }
+
+

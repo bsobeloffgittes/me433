@@ -3,6 +3,8 @@
 
 #include <math.h>
 #include "spi.h"
+#include "pico/stdlib.h"
+#include <stdio.h>
 
 #define READ_RAM        0x03
 #define WRITE_RAM       0x02
