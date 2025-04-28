@@ -15,7 +15,9 @@ void spi_ram_init(void);
 
 void pack_sin_wave(void);
 
-void begin_ram_write(void);
+void begin_ram_write(uint16_t addr);
+void read_ram_bytes(uint16_t addr, uint8_t len, uint8_t* dst_buf);
 
+void pack_addr_buf(uint16_t addr, uint8_t* buf);
 
 #endif

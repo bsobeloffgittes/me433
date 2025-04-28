@@ -44,7 +44,19 @@ int main() {
     // Perform the clock cycle counting part of the assignment
     //count_cycles();
 
+    spi_ram_init();
+
+    sleep_ms(100);
+
+    pack_sin_wave();
+
     while (true) {
-        sleep_ms(1000);
+        sleep_ms(100);
+
+        uint8_t destination;
+
+        read_ram_bytes(100, 1, &destination);
+
+        printf("%d\r\n", destination);
     }
 }
