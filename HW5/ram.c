@@ -31,15 +31,15 @@ void pack_sin_wave() {
     // Send stuff to start writing
     
     
-    for(int i = 0; i < 1000; i++) {
-        float curr_val = sin(i * 2*M_PI /1000.0);
+    for(uint16_t i = 0; i < 1000; i++) {
+        float curr_val = sin(((float)i) * 2*M_PI /1000.0);
         pack_float_buffer(curr_val, curr_float_buf);
 
         begin_ram_write(i * 4);
         spi_write_blocking(SPI_PORT, curr_float_buf, 4);
         cs_deselect(PIN_MEM_CS);
 
-        printf("Adding %0.2f to %d\r\n", curr_val, i);
+        printf("Adding %d %d %d %d to %d\r\n", curr_float_buf[0], curr_float_buf[1], curr_float_buf[2], curr_float_buf[3], i);
         
     }
 
@@ -50,7 +50,8 @@ void begin_ram_write(uint16_t addr) {
     uint8_t addr_buf[2];
 
     pack_addr_buf(addr, addr_buf);
-    
+
+    printf("Address: %d %d\r\n", addr_buf[0], addr_buf[1]);
     
     cs_select(PIN_MEM_CS);
     spi_write_blocking(SPI_PORT, &begin_write_buf, 1);
@@ -58,8 +59,8 @@ void begin_ram_write(uint16_t addr) {
 }
 
 void pack_addr_buf(uint16_t addr, uint8_t* buf) {
-    buf[0] = (uint8_t) (addr & 0xFF);
-    buf[1] = (uint8_t) (addr >> 8) & 0xFF;
+    buf[1] = (uint8_t) (addr & 0xFF);
+    buf[0] = (uint8_t) (addr >> 8) & 0xFF;
 }
 
 void read_ram_bytes(uint16_t addr, uint8_t len, uint8_t* dst_buf) {

@@ -8,7 +8,7 @@ void pack_float_buffer(float val, uint8_t* buf) {
     pack_num.f = val;
 
     for(int i = 0; i < 4; i++) {
-        buf[i] = pack_num.i & 0xFF;
-        pack_num.i = pack_num.i >> 8;
+        buf[i] = (pack_num.i >> 8*i) & 0xFF;
+
     }
 }
