@@ -15,13 +15,6 @@ void heartbeat(void);
 int main()
 {
     stdio_init_all();
-    while(!stdio_usb_connected) {
-        sleep_ms(100);
-    }
-
-    sleep_ms(10000);
-
-    printf("here1");
 
     // I2C Initialisation. Using it at 400Khz.
     i2c_init(I2C_PORT, 400*1000);
@@ -37,8 +30,6 @@ int main()
     gpio_init(ONBOARD_LED);
     gpio_set_dir(ONBOARD_LED, GPIO_OUT);
 
-
-    printf("here2");
     set_gp7_out();
 
 
@@ -46,8 +37,7 @@ int main()
     while (true) {
         heartbeat();
         sleep_ms(5);
-        read_pin(1);
-        printf("test");
+        write_pin(7, !read_pin(0));
     }
 }
 
@@ -62,10 +52,8 @@ void heartbeat() {
     i = (i+1)%100;
     if(i==0) {
         gpio_put(ONBOARD_LED, 0);
-        write_pin(7, 1);
     }
     else if(i==50) {
         gpio_put(ONBOARD_LED, 1);
-        write_pin(7, 0);
     }
 }
