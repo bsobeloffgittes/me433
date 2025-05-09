@@ -15,6 +15,7 @@
 
 void heartbeat(void);
 void draw_letter(char c, uint8_t x, uint8_t y);
+void draw_message(char* c, uint8_t x, uint8_t y);
 
 
 int main()
@@ -60,7 +61,10 @@ void heartbeat() {
     if(i==0) {
         gpio_put(ONBOARD_LED, 0);
         ssd1306_drawPixel(0,0,1);
-        draw_letter('A', 10, 5);
+        // draw_letter('A', 10, 5);
+        char message[50];
+        sprintf(message, "hello world");
+        draw_message(message, 40, 15);
     }
     else if(i==50) {
         // ssd1306_drawPixel(0,0,0);
@@ -77,6 +81,17 @@ void draw_letter(char c, uint8_t x, uint8_t y) {
         for(int j = 0; j < 8; j++) {
             ssd1306_drawPixel(x + i,y + j,((ASCII[c-0x20][i]) >> j) & 0x01);
         }
+    }
+}
+
+void draw_message(char* c, uint8_t x, uint8_t y) {
+    for(int i = 0; i < 100; i++) {
+
+        char next_char = c[i];
+
+        if(!next_char) break; // end if null terminator
+
+        draw_letter(next_char, x + 6*i, y);
     }
     ssd1306_update();
 }
