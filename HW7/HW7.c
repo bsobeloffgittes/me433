@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "ssd1306.h"
 #include "hardware/i2c.h"
+#include "font.h"
 
 // I2C defines
 // This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
@@ -13,6 +14,7 @@
 #define ONBOARD_LED 25
 
 void heartbeat(void);
+void draw_letter(char c, uint8_t x, uint8_t y);
 
 
 int main()
@@ -58,11 +60,23 @@ void heartbeat() {
     if(i==0) {
         gpio_put(ONBOARD_LED, 0);
         ssd1306_drawPixel(0,0,1);
+        draw_letter('A', 10, 5);
     }
     else if(i==50) {
         // ssd1306_drawPixel(0,0,0);
         ssd1306_clear();
         gpio_put(ONBOARD_LED, 1);
+    }
+    ssd1306_update();
+}
+
+
+void draw_letter(char c, uint8_t x, uint8_t y) {
+
+    for(int i = 0; i < 5; i++) {
+        for(int j = 0; j < 8; j++) {
+            ssd1306_drawPixel(x + i,y + j,((ASCII[c-0x20][i]) >> j) & 0x01);
+        }
     }
     ssd1306_update();
 }
