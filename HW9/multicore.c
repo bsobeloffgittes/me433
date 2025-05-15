@@ -24,21 +24,9 @@ void core1_entry() {
     adc_gpio_init(ADC_PIN); // ADC0 pin is used as ADC
     adc_select_input(0); // select to read from ADC0
 
-    // printf("in core1\n");
-
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
-    // multicore_fifo_push_blocking(FLAG_VALUE);
-
-    // printf("pushed\n");
-
-    // uint32_t g = multicore_fifo_pop_blocking();
-
-    // if (g != FLAG_VALUE)
-    //     printf("Hmm, that's not right on core 1!\n");
-    // else
-    //     printf("Its all gone well on core 1!");
 
     while (1) {
         uint32_t g = multicore_fifo_pop_blocking();
@@ -59,7 +47,6 @@ void core1_entry() {
             gpio_put(LED_PIN, false);
         }
     }
-        // tight_loop_contents();
 }
 
 int main() {
@@ -73,23 +60,10 @@ int main() {
 
     printf("Hello, multicore!\n");
 
-
-    /// \tag::setup_multicore[]
-
     multicore_launch_core1(core1_entry);
 
-    // Wait for it to start up
 
     printf("Launched Core 1\n");
-
-    // uint32_t g = multicore_fifo_pop_blocking();
-
-    // if (g != FLAG_VALUE)
-    //     printf("Hmm, that's not right on core 0!\n");
-    // else {
-    //     multicore_fifo_push_blocking(FLAG_VALUE);
-    //     printf("It's all gone well on core 0!");
-    // }
 
     while(1) {
         char msg[50];
@@ -110,5 +84,4 @@ int main() {
         }
     }
 
-    /// \end::setup_multicore[]
 }
