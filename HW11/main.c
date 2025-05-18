@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "bsp/board_api.h"
 #include "tusb.h"
@@ -52,6 +53,14 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 void led_blinking_task(void);
 void hid_task(void);
 
+
+int8_t delta_x = 0;
+int8_t delta_y = 0;
+
+uint8_t circle_mag = 5;
+
+void update_circle(void);
+
 /*------------- MAIN -------------*/
 int main(void)
 {
@@ -70,6 +79,7 @@ int main(void)
     led_blinking_task();
 
     hid_task();
+    update_circle();
   }
 }
 
@@ -138,10 +148,10 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
     case REPORT_ID_MOUSE:
     {
-      int8_t const delta = 5;
+      // int8_t const delta = 5;
 
       // no button, right + down, no scroll, no pan
-      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta, delta, 0, 0);
+      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta_x, delta_y, 0, 0);
     }
     break;
 
@@ -220,7 +230,7 @@ void hid_task(void)
   }else
   {
     // Send the 1st of report chain, the rest will be sent by tud_hid_report_complete_cb()
-    send_hid_report(REPORT_ID_KEYBOARD, btn);
+    send_hid_report(REPORT_ID_MOUSE, btn);
   }
 }
 
@@ -303,4 +313,16 @@ void led_blinking_task(void)
 
   board_led_write(led_state);
   led_state = 1 - led_state; // toggle
+}
+
+
+void update_circle() {
+  static float theta = 0;
+
+  delta_x = (int8_t)(circle_mag*cos(theta));
+  delta_y = (int8_t)(circle_mag*sin(theta));
+
+  theta += 2*M_PI / 500000;
+  
+  if(theta > 2*M_PI) theta = 0;
 }
