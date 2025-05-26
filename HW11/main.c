@@ -28,10 +28,19 @@
 #include <string.h>
 #include <math.h>
 
+#include "hardware/gpio.h"
+
 #include "bsp/board_api.h"
 #include "tusb.h"
 
 #include "usb_descriptors.h"
+
+
+#define UP_PIN 15
+#define LEFT_PIN 14
+#define RIGHT_PIN 13
+#define DOWN_PIN 12
+#define TOGGLE_PIN 11
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -53,11 +62,14 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 void led_blinking_task(void);
 void hid_task(void);
 
+bool circle_mode = 0;
 
 int8_t delta_x = 0;
 int8_t delta_y = 0;
 
 uint8_t circle_mag = 5;
+
+bool toggle_pressed = false;
 
 void update_circle(void);
 
@@ -65,6 +77,27 @@ void update_circle(void);
 int main(void)
 {
   board_init();
+
+  // Set the button pin as input
+  gpio_init(UP_PIN);
+  gpio_set_dir(UP_PIN, GPIO_IN);
+  gpio_pull_up(UP_PIN);
+
+  gpio_init(LEFT_PIN);
+  gpio_set_dir(LEFT_PIN, GPIO_IN);
+  gpio_pull_up(LEFT_PIN);
+
+  gpio_init(RIGHT_PIN);
+  gpio_set_dir(RIGHT_PIN, GPIO_IN);
+  gpio_pull_up(RIGHT_PIN);
+
+  gpio_init(DOWN_PIN);
+  gpio_set_dir(DOWN_PIN, GPIO_IN);
+  gpio_pull_up(DOWN_PIN);
+
+  gpio_init(TOGGLE_PIN);
+  gpio_set_dir(TOGGLE_PIN, GPIO_IN);
+  gpio_pull_up(TOGGLE_PIN);
 
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
@@ -79,8 +112,35 @@ int main(void)
     led_blinking_task();
 
     hid_task();
-    update_circle();
+
+    if(circle_mode) {
+      update_circle();
+    } else {
+      if(!gpio_get(UP_PIN)) {
+        delta_y = -5;
+      } else if(!gpio_get(DOWN_PIN)) {
+        delta_y = 5;
+      } else {
+        delta_y = 0;
+      }
+
+      if(!gpio_get(LEFT_PIN)) {
+        delta_x = -5;
+      } else if(!gpio_get(RIGHT_PIN)) {
+        delta_x = 5;
+      } else {
+        delta_x = 0;
+      }
+    }
+
+    if(!gpio_get(TOGGLE_PIN) && !toggle_pressed) {
+      circle_mode = !circle_mode;
+      toggle_pressed = true;
+    } else if(gpio_get(TOGGLE_PIN)) {
+      toggle_pressed = false;
+    }
   }
+    
 }
 
 //--------------------------------------------------------------------+
